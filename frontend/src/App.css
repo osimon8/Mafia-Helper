@@ -1,0 +1,24 @@
+/* @import '~antd/dist/antd.css'; */
+/* @import '~antd/lib/style/themes/default.less'; */
+@import '~react-bulma-components/dist/react-bulma-components.min.css';
+
+.App {
+  text-align: center;
+}
+
+.App {
+  /* background-color: #282c34; */
+  min-height: 100vh;
+}
+
+.form {
+  text-align: left;
+}
+
+.main {
+  max-width: 25vw;
+}
+
+.footer{
+  padding: 2rem 1rem 2rem !important;
+}
