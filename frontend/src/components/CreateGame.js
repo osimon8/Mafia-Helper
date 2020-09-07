@@ -1,12 +1,6 @@
 import React from 'react';
 import { Button, Container, Level, Form } from 'react-bulma-components';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
-import {Game} from '../components';
+import { Link } from "react-router-dom";
 
 const { Label, Input, Field, Control, Select } = Form;
 
@@ -27,6 +21,7 @@ class CreateGame extends React.Component {
         alert('A name was submitted: ' + this.state.value);
         event.preventDefault();
     }
+
 
     render() {
         return (
@@ -55,7 +50,7 @@ class CreateGame extends React.Component {
                     </Field>
                     <Level>
                         <Level.Item align="center">
-                            <Link to="/game">
+                            <Link to={{pathname: `/${this.state.code}`, state: {newGame: this.state}}}>
                                 <Button color="success">Create!</Button>
                             </Link>
                         </Level.Item>
