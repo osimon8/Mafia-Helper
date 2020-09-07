@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Container, Level, Form } from 'react-bulma-components';
+import { Button, Container, Level, Form, Heading } from 'react-bulma-components';
 import axios from 'axios';
 
 const { Label, Input, Field, Control, Checkbox } = Form;
@@ -10,21 +10,18 @@ class CreateRole extends React.Component {
         super(props);
         this.state = { name: '', description: '', hasNightAction: false, nightAction: {}, deathAction: null};
         this.handleChange = this.handleChange.bind(this);
-        this.handleCheck = this.handleCheck.bind(this);
         this.handleNightChange = this.handleNightChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange(event) {
-        this.setState({ [event.target.name]: event.target.value });
-    }
-
-    handleCheck(event) {
-        this.setState({ [event.target.name]: event.target.checked });
+        const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+        this.setState({ [event.target.name]: value });
     }
 
     handleNightChange(event) {
-        this.setState({ nightAction: {...this.state.nightAction, [event.target.name]: event.target.value} });
+        const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+        this.setState({ nightAction: {...this.state.nightAction, [event.target.name]: value} });
     }
 
     handleSubmit() {
@@ -44,6 +41,7 @@ class CreateRole extends React.Component {
     render() {
         return (
                 <Container className="form">
+                    <Heading style={{'textAlign': 'center'}}>Create a Role</Heading>
                     <Field>
                         <Label>Name</Label>
                         <Control>
@@ -59,7 +57,7 @@ class CreateRole extends React.Component {
                     <Field>
                         <Control>
                             <Label>Night Action?
-                                <Checkbox onChange={this.handleCheck} checked={this.state.hasNightAction} style={{'marginLeft': '5px'}} name="hasNightAction"></Checkbox>
+                                <Checkbox onChange={this.handleChange} checked={this.state.hasNightAction} style={{'marginLeft': '5px'}} name="hasNightAction"></Checkbox>
                             </Label>
                         </Control>
                     </Field>
@@ -74,7 +72,7 @@ class CreateRole extends React.Component {
                     <Field invisible={!this.state.hasNightAction}>
                         <Control>
                             <Label>Use Limit?</Label>
-                            <Checkbox onChange={this.handleCheck} checked={this.state.hasNightAction} name="hasNightAction"></Checkbox>
+                            <Checkbox onChange={this.handleNightChange} checked={this.state.nightAction.hasUseLimit || false} name="hasNightAction" name="hasUseLimit"></Checkbox>
                         </Control>
                     </Field></Container> : null}
                     <Level>

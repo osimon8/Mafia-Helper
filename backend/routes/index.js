@@ -8,14 +8,15 @@ router.get('/', function(req, res, next) {
   res.send('test');
 });
 
-router.post('/createGame', function(req, res, next) {
+router.post('/createGame', async function(req, res, next) {
     const {code, players, roles} = req.body;
-    console.log(roles)
     if (!code || !players) {
       res.status(400).send('Missing required parameter to start game');
       return;
     }
-    res.send('test');
+    let Roles = await Role.find()
+
+    
 });
 
 router.post('/createRole', (req, res) => {
@@ -31,11 +32,23 @@ router.post('/createRole', (req, res) => {
 
   const role = new Role({name, description, nightAction, deathAction, alignment});
 
-  role.save().then((result) => {
-    console.log(result);
-    res.send("GoOOOD");
+  role.save()
+  .then(result => {
+    res.status(201).send("Role successfully created");
+  })
+  .catch(err => {
+    let message = "Something went wrong creating role";
+    if (err.code === 11000) {
+      message = "Role with that name already exists";
+    }
+    res.status(400).send(message);
   });
+});
 
+router.get('/getRoles', (req, res) => {
+  Role.find({}).then((data) => {
+    res.json(data);
+  }).catch(err => res.status(400).send("Something went wrong"));
 });
 
 module.exports = router;

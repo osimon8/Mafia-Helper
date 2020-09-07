@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Container, Heading, Hero, Level } from 'react-bulma-components';
 import {Footer, CreateGame, JoinGame} from '../components'
-import CreateRole from './CreateRole';
 
 class Home extends React.Component {
 
@@ -12,7 +11,7 @@ class Home extends React.Component {
   }
 
   renderMain() {
-    return this.state.creatingGame ? <Container><CreateGame/><CreateRole/></Container> : <JoinGame/>;
+    return this.state.creatingGame ? <CreateGame/> : <JoinGame/>;
   }
 
 
@@ -27,8 +26,8 @@ class Home extends React.Component {
                 <Level.Item><Button varaint="contained" color="primary" onClick={() => this.setState({creatingGame: false})}>Join Game</Button></Level.Item>
                 <Level.Item><Button varaint="contained" color="primary" onClick={() => this.setState({creatingGame: true})}>Create Game</Button></Level.Item>
               </Level>
-              {this.renderMain()}
             </Container>
+            {this.renderMain()}
           </Hero.Body>
           <Hero.Footer>
             <Footer/>
