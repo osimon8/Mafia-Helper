@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import {Home, Game, GodGame} from './components'
+import {Home, Game} from './components'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 class App extends React.Component {

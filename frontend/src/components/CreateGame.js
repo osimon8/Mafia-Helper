@@ -8,7 +8,7 @@ class CreateGame extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { code: '', players: '', setup:''};
+        this.state = { code: '', players: '', setup:'', roles:{}};
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
