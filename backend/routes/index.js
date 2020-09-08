@@ -3,19 +3,29 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const Game = require('../models/Game'); 
 const Role = require('../models/Role'); 
+const jwt = require('jsonwebtoken');
 
 router.get('/', function(req, res, next) {
   res.send('test');
 });
 
 router.post('/createGame', async function(req, res, next) {
-    const {code, players, roles} = req.body;
+    const {code, players, roles, numMafia} = req.body;
     if (!code || !players) {
       res.status(400).send('Missing required parameter to start game');
       return;
     }
-    let Roles = await Role.find()
-
+    const game = new Game({code, numPlayers: players, numMafia, players: [], roles: roles.map(a => ({id: a.id, qty: a.qty}))});
+    game.save().then((result) => {
+      res.status(201).send(`Successfully created game with code ${code}`);
+    })
+    .catch(err => {
+      let message = "Something went wrong creating game";
+      if (err.code === 11000) {
+        message = "Game with that code already exists";
+      }
+      res.status(400).send(message);
+    });
     
 });
 

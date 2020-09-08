@@ -1,25 +1,21 @@
 import React from 'react';
 import './App.css';
 import {Home, Game} from './components'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Router, Route, Switch } from 'react-router-dom';
+import history from "./history";
 
 class App extends React.Component {
 
   render() {
-
       return (
-        <Router>
+        <Router history={history}>
             <Route exact path="/" component={Home}></Route>
             <Switch>
-                <Route path="/:code" component={Game}></Route>
+                <Route exact path="/game" component={Game}></Route>
             </Switch>
         </Router>
-
       );
     }
   }
-
-
-
 
 export default App;

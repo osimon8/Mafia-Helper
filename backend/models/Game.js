@@ -14,9 +14,10 @@ const playerSchema = new Schema({
 const gameSchema = new Schema({
     code: { type: String, unique: true, required: true },
     numPlayers: { type: Number, required: true },
+    numMafia: {type: Number, required: true},
     turn: { type: Number, default: 0 },
     players: [playerSchema],
-    roles: [{ type: Schema.ObjectId, ref: 'Role' }]
+    roles: [{role: { type: Schema.ObjectId, ref: 'Role'}, qty: {type: Number, default: 1}}]
 }, { timestamps: true });
 
 const Game = mongoose.model('Game', gameSchema);

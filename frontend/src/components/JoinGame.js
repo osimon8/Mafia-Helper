@@ -34,7 +34,7 @@ class JoinGame extends React.Component {
                   <Level>
                     <Level.Item align="center">
                         <Link to="/game">
-                        <   Button color="success">Join</Button>
+                            <Button color="success">Join</Button>
                         </Link>
                     </Level.Item>
                 </Level>

@@ -1,73 +1,90 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Container, Level, Form } from 'react-bulma-components';
-import { Link } from "react-router-dom";
-import { CreateSetup } from '../components';
+import history from "../history";
+import { CreateSetup, Error } from '../components';
+import axios from 'axios';
 
 const { Label, Input, Field, Control, Select } = Form;
 
 const MIN_PLAYERS = 7;
 
-class CreateGame extends React.Component {
+const CreateGame = (props) => {
+    const [code, setCode] = useState('');
+    const [players, setPlayers] = useState(MIN_PLAYERS);
+    const [roles, setRoles] = useState(new Map());
+    const [error, setError] = useState('');
+    const [mafia, setMafia] = useState(1);
 
-    constructor(props) {
-        super(props);
-        this.state = { code: '', players: MIN_PLAYERS, setup: '', roles: {} };
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+    const handleSubmit = () => {
+        const roleArr = [...roles].map(([a, b]) => ({_id: a._id, qty:b})); // convert map to array
+        axios.post('http://localhost:9000/createGame', {code, players, roles: roleArr, numMafia: mafia})
+            .then(res => {
+                history.push('/game');
+            })
+            .catch(err => {
+                setError(err.response.data);
+            });
+    };
+
+    const roleHandler = {
+        addRole: (role) => {
+            if (role && !roles.has(role)) {
+                setRoles(new Map(roles.set(role, 1)));
+            }
+        },
+        updateQuantity: (role, qty) => {
+            if (role && qty) {
+                setRoles(new Map(roles.set(role, qty)));
+            }
+        },
+        deleteRole: (role) => {
+            return () => {
+                roles.delete(role)
+                setRoles(new Map(roles[Symbol.iterator]()))
+            };
+        }
     }
 
-    handleChange(event) {
-        this.setState({ [event.target.name]: event.target.value });
-    }
-
-    handleSubmit(event) {
-        alert('A name was submitted: ' + this.state.value);
-        event.preventDefault();
-    }
-
-
-    generateOptions() {
+    const generateOptions = () => {
         let options = [];
         for (let i = MIN_PLAYERS; i <= 20; ++i) {
             options.push(i);
         }
         return options.map(i => <option key={i}>{i}</option>);
-    }
+    };
 
-    render() {
-        return (
-            <Container className="form">
-                <Field>
-                    <Label>Room Code</Label>
+    return (
+        <Container className="form">
+            <Field>
+                <Label>Room Code</Label>
+                <Control>
+                    <Input onChange={(e) => setCode(e.target.value)} value={code} type="text" placeholder="e.g. Group1" name="code" />
+                </Control>
+            </Field>
+            <Field horizontal={true}>
+                <Label>Players: &nbsp;</Label>
+                <Field.Body>
                     <Control>
-                        <Input onChange={this.handleChange} value={this.state.code} type="text" placeholder="e.g. Group1" name="code" />
+                        <Select onChange={(e) => setPlayers(e.target.value)} value={players} name="players">
+                            {generateOptions()}
+                        </Select>
                     </Control>
-                </Field>
-                <Field horizontal={true}>
-                    <Label>Players: &nbsp;</Label>
-                    <Field.Body>
-                        <Control>
-                            <Select onChange={this.handleChange} value={this.state.players} name="players">
-                                {this.generateOptions()}
-                            </Select>
-                        </Control>
-                    </Field.Body>
-                </Field>
-                <Field>
-                    <Label>Setup</Label>
-                    <CreateSetup numPlayers={this.state.players} />
-                </Field>
-                <Level>
-                    <Level.Item align="center">
-                        <Link to={{ pathname: `/${this.state.code}`, state: { newGame: this.state } }}>
-                            <Button color="success">Create!</Button>
-                        </Link>
-                    </Level.Item>
-                </Level>
+                </Field.Body>
+            </Field>
+            <Field>
+                <Label>Setup</Label>
+                <CreateSetup numPlayers={players} roles={roles} roleHandler={roleHandler} mafia={mafia} setMafia={setMafia}/>
+            </Field>
+            <Error error={error}/>
+            <Level>
+                <Level.Item align="center">
+                    <Button color="success" onClick={handleSubmit}>Create!</Button>
+                </Level.Item>
+            </Level>
 
-            </Container>
-        );
-    }
+        </Container>
+    );
+
 }
 
 
