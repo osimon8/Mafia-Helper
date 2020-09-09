@@ -8,6 +8,7 @@ import {startSession} from '../session';
 const { Label, Input, Field, Control } = Form;
 
 const JoinGame = (props) => {
+    const {client} = props;
 
     const [code, setCode] = useState('');
     const [name, setName] = useState('');
@@ -16,16 +17,17 @@ const JoinGame = (props) => {
     const history = useHistory();
 
     const handleSubmit = (event) => {
-        axios.post('http://localhost:9000/joinGame', { code, name })
-            .then(res => {
-                startSession(res.data);
-                history.push('/game');
-            })
-            .catch(err => {
-                if (err && err.response) {
-                    setError(err.response.data);
-                }
-            });
+        client.joinById(code).then(res => console.log(res));
+        // axios.post('http://localhost:9000/joinGame', { code, name })
+        //     .then(res => {
+        //         startSession(res.data);
+        //         history.push('/game');
+        //     })
+        //     .catch(err => {
+        //         if (err && err.response) {
+        //             setError(err.response.data);
+        //         }
+        //     });
     };
 
     return (

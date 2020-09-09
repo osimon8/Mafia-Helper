@@ -4,6 +4,7 @@ import { Footer } from '../components'
 import { useHistory } from 'react-router-dom';
 import { getToken, endSession } from '../session';
 import axios from 'axios';
+import * as Colyseus from 'colyseus.js';
 
 const Game = (props) => {
 

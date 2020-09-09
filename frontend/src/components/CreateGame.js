@@ -11,6 +11,7 @@ const { Label, Input, Field, Control, Select } = Form;
 const MIN_PLAYERS = 7;
 
 const CreateGame = (props) => {
+    const {client} = props;
     const [code, setCode] = useState('');
     const [players, setPlayers] = useState(MIN_PLAYERS);
     const [roles, setRoles] = useState(new Map());
@@ -20,16 +21,21 @@ const CreateGame = (props) => {
 
     const handleSubmit = () => {
         const roleArr = [...roles].map(([a, b]) => ({_id: a._id, qty:b})); // convert map to array
-        axios.post('http://localhost:9000/createGame', {code, players, roles: roleArr, numMafia: mafia})
-            .then(res => {
-                startSession(res.data);
-                history.push('/game');
-            })
-            .catch(err => {
-                if (err && err.response) {
-                    setError(err.response.data);
-                }
-            });
+        client.create("main").then(room => {
+            console.log('scuessful');
+            console.log(room);
+        })
+        .catch(e => console.log(e));
+        // axios.post('http://localhost:9000/createGame', {code, players, roles: roleArr, numMafia: mafia})
+        //     .then(res => {
+        //         startSession(res.data);
+        //         history.push('/game');
+        //     })
+        //     .catch(err => {
+        //         if (err && err.response) {
+        //             setError(err.response.data);
+        //         }
+        //     });
     };
 
     const roleHandler = {

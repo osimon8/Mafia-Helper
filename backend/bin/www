@@ -7,12 +7,16 @@
 var app = require('../app');
 var debug = require('debug')('backend:server');
 var http = require('http');
+var express = require('express');
+const colyseus = require('colyseus');
+const MainRoom = require('../Rooms/MainRoom');
 
 /**
  * Get port from environment and store in Express.
  */
 
 var port = normalizePort(process.env.PORT || '9000');
+const gamePort = normalizePort('4000');
 app.set('port', port);
 
 /**
@@ -20,6 +24,19 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+const gameApp = express();
+
+const gameServer = new colyseus.Server({
+  server: http.createServer(gameApp),
+  express: gameApp,
+  pingInterval: 1500
+});
+
+gameServer.define('main', MainRoom);
+
+gameServer.onShutdown(() => console.log("Game Server shutting down"));
+gameServer.listen(gamePort);
 
 /**
  * Listen on provided port, on all network interfaces.

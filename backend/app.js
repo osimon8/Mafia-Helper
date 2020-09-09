@@ -13,7 +13,6 @@ var mongoose = require('mongoose');
 const creds = require('./creds.json');
 mongoose.connect(creds.mongo);
 
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
