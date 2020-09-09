@@ -1,46 +1,55 @@
-import React from 'react';
-import {Container, Form, Level, Button} from 'react-bulma-components';
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import { Container, Form, Level, Button } from 'react-bulma-components';
+import { Link, useHistory } from "react-router-dom";
+import axios from 'axios';
+import {Error} from '../components';
+import {startSession} from '../session';
 
-const { Label, Input, Field, Control} = Form;
+const { Label, Input, Field, Control } = Form;
 
-class JoinGame extends React.Component {
+const JoinGame = (props) => {
 
-    constructor(props) {
-        super(props);
-        this.state = { code: ''};
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
+    const [code, setCode] = useState('');
+    const [name, setName] = useState('');
+    const [error, setError] = useState('');
 
-    handleChange(event) {
-        this.setState({ [event.target.name]: event.target.value });
-    }
+    const history = useHistory();
 
-    handleSubmit(event) {
-        alert('A name was submitted: ' + this.state.value);
-        event.preventDefault();
-    }
+    const handleSubmit = (event) => {
+        axios.post('http://localhost:9000/joinGame', { code, name })
+            .then(res => {
+                startSession(res.data);
+                history.push('/game');
+            })
+            .catch(err => {
+                if (err && err.response) {
+                    setError(err.response.data);
+                }
+            });
+    };
 
-    render() {
-        return (
-                <Container className="form">
-                <Field>
-                    <Label>Join Game</Label>
-                    <Control>
-                      <Input onChange={this.handleChange} value={this.state.code} type="text" placeholder="Room Code" name="code"/>
-                    </Control>
-                  </Field>
-                  <Level>
-                    <Level.Item align="center">
-                        <Link to="/game">
-                            <Button color="success">Join</Button>
-                        </Link>
-                    </Level.Item>
-                </Level>
-                </Container>
-        );
-    }
+    return (
+        <Container className="form">
+            <Field>
+                <Label>Join Game</Label>
+                <Control>
+                    <Input onChange={(e) => setCode(e.target.value)} value={code} type="text" placeholder="Room Code" name="code" />
+                </Control>
+            </Field>
+            <Field>
+                <Label>Name</Label>
+                <Control>
+                    <Input onChange={(e) => setName(e.target.value)} value={name} type="text" placeholder="e.g. Player1" name="name" />
+                </Control>
+            </Field>
+            <Error error={error}/>
+            <Level>
+                <Level.Item align="center">
+                    <Button color="success" onClick={handleSubmit}>Join</Button>
+                </Level.Item>
+            </Level>
+        </Container>
+    );
 }
 
 

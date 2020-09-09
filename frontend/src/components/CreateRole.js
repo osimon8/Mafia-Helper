@@ -31,7 +31,6 @@ class CreateRole extends React.Component {
             nightAction: this.state.hasNightAction ? this.state.nightAction : null
         }
         axios.post('http://localhost:9000/createRole', this.state).then((res) => {
-            console.log(res);
             this.props.close();
         })
         .catch(err => {

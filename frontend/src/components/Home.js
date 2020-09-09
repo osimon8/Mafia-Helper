@@ -14,7 +14,6 @@ class Home extends React.Component {
     return this.state.creatingGame ? <CreateGame/> : <JoinGame/>;
   }
 
-
   render() {
       return (
         <Hero className="App">

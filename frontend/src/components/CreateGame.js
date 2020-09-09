@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Button, Container, Level, Form } from 'react-bulma-components';
-import history from "../history";
+// import history from "../history";
 import { CreateSetup, Error } from '../components';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
+import {startSession} from '../session';
 
 const { Label, Input, Field, Control, Select } = Form;
 
@@ -14,15 +16,19 @@ const CreateGame = (props) => {
     const [roles, setRoles] = useState(new Map());
     const [error, setError] = useState('');
     const [mafia, setMafia] = useState(1);
+    const history = useHistory();
 
     const handleSubmit = () => {
         const roleArr = [...roles].map(([a, b]) => ({_id: a._id, qty:b})); // convert map to array
         axios.post('http://localhost:9000/createGame', {code, players, roles: roleArr, numMafia: mafia})
             .then(res => {
+                startSession(res.data);
                 history.push('/game');
             })
             .catch(err => {
-                setError(err.response.data);
+                if (err && err.response) {
+                    setError(err.response.data);
+                }
             });
     };
 
