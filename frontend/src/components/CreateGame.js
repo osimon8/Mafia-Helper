@@ -5,13 +5,14 @@ import { CreateSetup, Error } from '../components';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import {startSession} from '../session';
+import { initRoom } from '../initRoom';
 
 const { Label, Input, Field, Control, Select } = Form;
 
 const MIN_PLAYERS = 7;
 
 const CreateGame = (props) => {
-    const {client} = props;
+    const {client, room, setRoom} = props;
     const [code, setCode] = useState('');
     const [players, setPlayers] = useState(MIN_PLAYERS);
     const [roles, setRoles] = useState(new Map());
@@ -21,11 +22,19 @@ const CreateGame = (props) => {
 
     const handleSubmit = () => {
         const roleArr = [...roles].map(([a, b]) => ({_id: a._id, qty:b})); // convert map to array
-        client.create("main").then(room => {
+        client.create("mafia", {code, roles: roleArr, god: true}).then(r => {
             console.log('scuessful');
-            console.log(room);
+            //initRoom(r);
+            console.log(r);
+            setRoom(r);
+            history.push('/game');
         })
-        .catch(e => console.log(e));
+        .catch(err => {
+            console.log(err.message);
+            if (err && err.message) {
+                setError(err.message);
+            }
+        });
         // axios.post('http://localhost:9000/createGame', {code, players, roles: roleArr, numMafia: mafia})
         //     .then(res => {
         //         startSession(res.data);

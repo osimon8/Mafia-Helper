@@ -11,11 +11,11 @@ class Home extends React.Component {
   }
 
   renderMain() {
-    return this.state.creatingGame ? <CreateGame client={this.props.client}/> : <JoinGame client={this.props.client}/>;
+    return this.state.creatingGame ? <CreateGame client={this.props.client} room={this.props.room} setRoom={this.props.setRoom}/> 
+    : <JoinGame client={this.props.client} room={this.props.room} setRoom={this.props.setRoom}/>;
   }
 
   render() {
-      this.props.client.getAvailableRooms("main").then(res => console.log(res));
       return (
         <Hero className="App">
           <Hero.Head renderAs="header"> </Hero.Head>

@@ -4,11 +4,12 @@ import { Link, useHistory } from "react-router-dom";
 import axios from 'axios';
 import {Error} from '../components';
 import {startSession} from '../session';
+import {initRoom} from '../initRoom';
 
 const { Label, Input, Field, Control } = Form;
 
 const JoinGame = (props) => {
-    const {client} = props;
+    const {client, setRoom} = props;
 
     const [code, setCode] = useState('');
     const [name, setName] = useState('');
@@ -17,7 +18,7 @@ const JoinGame = (props) => {
     const history = useHistory();
 
     const handleSubmit = (event) => {
-        client.joinById(code).then(res => console.log(res));
+        
         // axios.post('http://localhost:9000/joinGame', { code, name })
         //     .then(res => {
         //         startSession(res.data);
@@ -28,6 +29,21 @@ const JoinGame = (props) => {
         //             setError(err.response.data);
         //         }
         //     });
+
+        axios.post('http://localhost:9000/getGame', { code })
+            .then(res => {
+                // startSession(res.data);
+                // history.push('/game');
+                client.joinById(res.data, {name}).then(resp => {
+                    setRoom(resp);
+                    history.push('/game');
+                });
+            })
+            .catch(err => {
+                if (err && err.response) {
+                    setError(err.response.data);
+                }
+            });
     };
 
     return (

@@ -9,7 +9,7 @@ var debug = require('debug')('backend:server');
 var http = require('http');
 var express = require('express');
 const colyseus = require('colyseus');
-const MainRoom = require('../Rooms/MainRoom');
+const Mafia = require('../Rooms/Mafia');
 
 /**
  * Get port from environment and store in Express.
@@ -33,7 +33,7 @@ const gameServer = new colyseus.Server({
   pingInterval: 1500
 });
 
-gameServer.define('main', MainRoom);
+gameServer.define('mafia', Mafia);
 
 gameServer.onShutdown(() => console.log("Game Server shutting down"));
 gameServer.listen(gamePort);
@@ -50,7 +50,7 @@ server.on('listening', onListening);
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val) {
+function normalizePort(val: any) {
   var port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -70,7 +70,7 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+function onError(error : any) {
   if (error.syscall !== 'listen') {
     throw error;
   }
