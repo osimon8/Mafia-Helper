@@ -56,6 +56,9 @@ class State extends Schema {
 
     @type('uint8')
     turn : number = 0;
+
+    @type([Event])
+    eventLog = new ArraySchema<Event>();
 }
 
 export {Player, Role, State, Action, Event};

@@ -1,5 +1,5 @@
 import {Room, Client} from 'colyseus';
-import {Player, State, Role, Action} from './State';
+import {Player, State, Role, Action, Event} from './State';
 import {registerGame, deleteGame, gameExists} from './RoomMap';
 const mongoose = require('mongoose');
 const RoleModel = mongoose.model('Role');
@@ -37,12 +37,16 @@ class Mafia extends Room<State> {
         const code = options.code || this.roomId;
 
         if (gameExists(code)) {
-            throw new Error(`Game with code ${code} already exists.`);
+            throw new Error(`Game with code "${code}" already exists.`);
         }
 
         this.state.code = code
-        registerGame(this.state.code, this.roomId);
+        registerGame(code, this.roomId);
 
+        const event = new Event();
+        event.text = `Game created with code "${code}"`;
+        this.state.eventLog.push(event);
+        
         this.onMessage("message", (client, message) => {
             console.log("ChatRoom received message from", client.sessionId, ":", message);
             this.broadcast("messages", `(${client.sessionId}) ${message}`);
@@ -60,19 +64,32 @@ class Mafia extends Room<State> {
         }
         this.state.players[client.sessionId] = player;
 
-        const msg = god ? `God (${ player.name}) has joined.`: `${ player.name} joined.`
+        // const msg = god ? `God (${ player.name}) has joined.`: `${ player.name} joined.`
+        if (!god) {
+            const event = new Event();
+            event.text = `${ player.name} joined`;
+            this.state.eventLog.push(event);
+        }
 
-        this.broadcast("messages", msg);
+
+        //this.broadcast("messages", msg);
       }
 
     onLeave (client: Client) {
-        const name = this.state.players[client.sessionId].name;
+        const {name, god} = this.state.players[client.sessionId];
+
+        // const msg = god ? `God (${ player.name}) has joined.`: `${ player.name} joined.`
+        if (!god) {
+            const event = new Event();
+            event.text = `${ name} left`;
+            this.state.eventLog.push(event);
+        }
+
         delete this.state.players[client.sessionId];
-        this.broadcast("messages", `${ name } left.`);
     }
 
     onDispose () {
-        console.log("Dispose ChatRoom");
+        console.log(`Dispose Game with code ${this.state.code}`);
         deleteGame(this.state.code);
     }
 

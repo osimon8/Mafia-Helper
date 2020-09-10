@@ -4,10 +4,22 @@ import { Container, Heading, Box, Button, Loader, Section } from 'react-bulma-co
 const EventLog = (props) => {
     const {events} = props;
 
+    const Messages = () => {
+        return (
+        <Container style={{textAlign: 'left', maxHeight: '90%', overflowY: 'auto', fontSize: '.95em', lineHeight: '1.8'}}>        
+        {events.map((e, i) => {
+            return <div key ={i} style={{borderBottom:'1px solid lightgray'}}>
+                    <p>{e.text}</p>
+            </div>;
+        })}
+        </Container>);
+    };
+
     return (
         <Container>
-            <Box>
+            <Box style={{height: '50vh'}}>
                 <Heading>Events</Heading>
+                <Messages/>
             </Box>
         </Container>
     );

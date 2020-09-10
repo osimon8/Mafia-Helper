@@ -41,7 +41,7 @@ const Game = (props) => {
           case "phase":
             setPhase(value);
             break;
-          case "events":
+          case "eventLog":
             setEvents([...Object.values(value.toJSON())]);
             break;
         }
@@ -73,10 +73,10 @@ const Game = (props) => {
   const TurnDisplay = () => {
     let msg;
     if (phase === "waiting") {
-      msg = `${turn % 2 == 0 ? 'Night' : 'Day'} ${Math.floor(turn / 2) + 1}`;
+      msg = "Waiting for players..."; 
     }
     else {
-      msg = "Waiting for players...";
+      msg = `${turn % 2 == 0 ? 'Night' : 'Day'} ${Math.floor(turn / 2) + 1}`;
     }
     return (
       <Container>
@@ -87,14 +87,14 @@ const Game = (props) => {
 
   const GameContent = () => {
     return (
-      <Container breakpoint="fluid">
+      <Container fluid={true}>
         <Container style={{marginBottom: '1rem'}}>
         <Heading>Code: {code}</Heading>
             <Heading subtitle>Roles: {roles.map((x, i) => `${x.name}${x.qty > 1 ? ` (${x.qty})` : ''}${i < roles.length - 1 ? ', ' : ''}`)}</Heading>
             <TurnDisplay />
         </Container>
         <Columns>
-            <Columns.Column size={2}>
+            <Columns.Column size={3}>
               <EventLog events={events} />
             </Columns.Column>
             <Columns.Column>

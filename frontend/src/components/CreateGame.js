@@ -22,7 +22,7 @@ const CreateGame = (props) => {
 
     const handleSubmit = () => {
         const roleArr = [...roles].map(([a, b]) => ({_id: a._id, qty:b})); // convert map to array
-        client.create("mafia", {code, roles: roleArr, god: true}).then(r => {
+        client.create("mafia", {code: code.trim(), roles: roleArr, god: true}).then(r => {
             console.log('scuessful');
             //initRoom(r);
             console.log(r);
