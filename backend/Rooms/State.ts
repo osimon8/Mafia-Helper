@@ -12,6 +12,14 @@ class Player extends Schema {
 class Action extends Schema {
     @type('string')
     description: string = '';
+
+    @type('int8')
+    useLimit: number = -1;
+}
+
+class Event extends Schema {
+    @type('string')
+    text: string = '';
 }
 
 class Role extends Schema {
@@ -45,6 +53,9 @@ class State extends Schema {
 
     @type([Role])
     roles = new ArraySchema<Role>();
+
+    @type('uint8')
+    turn : number = 0;
 }
 
-export {Player, Role, State, Action};
+export {Player, Role, State, Action, Event};

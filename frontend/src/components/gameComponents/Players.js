@@ -23,10 +23,8 @@ const Players = (props) => {
             columns[i] = [];
         }
 
-        players.forEach((player, i) => {
-            if (!player.god) {
-                columns[i % numColumns].push(<PlayerTile key={i} name={player.name}/>);
-            }
+        players.filter(x => !x.god).forEach((player, i) => {
+            columns[i % numColumns].push(<PlayerTile key={i} name={player.name}/>);
         });
 
         return <Columns>
