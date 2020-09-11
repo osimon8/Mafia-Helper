@@ -1,25 +1,16 @@
-import {Schema, MapSchema, ArraySchema, type}from "@colyseus/schema";
+import {Schema, MapSchema, ArraySchema, type, filter}from "@colyseus/schema";
+import {Client} from 'colyseus';
 
-
-class Player extends Schema {
-    @type('string')
-    name: string = 'Benedict';
-
-    @type('boolean')
-    god = false;
-}
 
 class Action extends Schema {
     @type('string')
     description: string = '';
 
     @type('int8')
-    useLimit: number = -1;
-}
+    uses: number = -1;
 
-class Event extends Schema {
-    @type('string')
-    text: string = '';
+    @type(['string'])
+    history = new ArraySchema<string>();
 }
 
 class Role extends Schema {
@@ -30,10 +21,10 @@ class Role extends Schema {
     description: string = '';
 
     @type(Action)
-    nightAction: Action | null = null;
+    nightAction?: Action;
 
     @type(Action)
-    deathAction: Action | null = null;
+    deathAction?: Action;
 
     @type('string')
     alignment: string = 'Town';
@@ -44,12 +35,43 @@ class Role extends Schema {
 }
 
 
+class Player extends Schema {
+    @type('string')
+    name: string = 'Benedict';
+
+    // @type('boolean')
+    // god = false;
+    @type(Role)
+    role?: Role; 
+
+    @type('string')
+    alignment: string = 'Town';
+}
+
+
+class Event extends Schema {
+    @type('string')
+    text: string = '';
+}
+
 class State extends Schema {
     @type("string")
     code : string = '';
 
-    @type({ map: Player })
+    @type({ map: 'string' })
+    playerNames = new MapSchema<string>();
+
+    @filter(function (this: State, client: Client, value?: State['players'], root?: Schema) {
+        return Object.keys(this.gods).some(x => x === client.sessionId);
+    })
+    @type({map: Player})
     players = new MapSchema<Player>();
+
+    @type('uint8')
+    numPlayers: number = 0;
+
+    @type('uint8')
+    numMafia: number = 0;
 
     @type([Role])
     roles = new ArraySchema<Role>();
@@ -59,6 +81,19 @@ class State extends Schema {
 
     @type([Event])
     eventLog = new ArraySchema<Event>();
+
+    @type({map: 'boolean'})
+    gods = new MapSchema<Boolean>();
+
+    @type('string')
+    phase: string = 'waiting';
+
+    @type('uint8')
+    nightPhases: number = 2;
+
+    @type('uint8')
+    nightPhase: number = 0;
+
 }
 
 export {Player, Role, State, Action, Event};

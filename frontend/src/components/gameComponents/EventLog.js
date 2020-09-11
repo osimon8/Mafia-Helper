@@ -18,7 +18,7 @@ const EventLog = (props) => {
     return (
         <Container>
             <Box style={{height: '50vh'}}>
-                <Heading>Events</Heading>
+                <Heading>History</Heading>
                 <Messages/>
             </Box>
         </Container>

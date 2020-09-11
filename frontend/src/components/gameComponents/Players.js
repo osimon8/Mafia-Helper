@@ -5,15 +5,32 @@ import { Button, Container, Level, Form, Tile, Box, Columns, Heading } from 'rea
 const PlayerTile = (props) => {
 
     // return <Tile >//style={{'backgroundColor': 'gray'}}>
-    return <Box style={{'backgroundColor': 'light-gray'}}>
-            <Heading size={4}>{props.name}</Heading>
+    const {name} = props;
+
+    return <Box style={{'backgroundColor': 'lightgray'}}>
+            <Heading size={4}>{name}</Heading>
+            <span/>
+        </Box>;
+}
+
+const PlayerTileDetailed = (props) => {
+
+    // return <Tile >//style={{'backgroundColor': 'gray'}}>
+    const {player} = props;
+    const {name, alignment, role} = player;
+
+    const backgroundColor = alignment === 'Town' ? 'lightgreen' : 'rgb(255 0 0 / 67%)';
+
+    return <Box style={{backgroundColor}}>
+            <Heading size={4}>{name}</Heading>
+            {role && role.name ? <Heading subtitle size={4}>{role.name}</Heading> : <span/>}
         </Box>;
 }
 
 
 const Players = (props) => {
 
-    const {players} = props;
+    const {players, playerNames, ready} = props;
 
     const renderTiles = () => {
         const columns = [];
@@ -23,9 +40,16 @@ const Players = (props) => {
             columns[i] = [];
         }
 
-        players.filter(x => !x.god).forEach((player, i) => {
-            columns[i % numColumns].push(<PlayerTile key={i} name={player.name}/>);
-        });
+        if (players && ready) {
+            players.forEach((player, i) => {
+                columns[i % numColumns].push(<PlayerTileDetailed key={i} player={player}/>);
+            });
+        }
+        else {
+            playerNames.forEach((name, i) => {
+                columns[i % numColumns].push(<PlayerTile key={i} name={name}/>);
+            });
+        }
 
         return <Columns>
             {columns.map((c, i) => <Columns.Column key={i}>{c}</Columns.Column>)}

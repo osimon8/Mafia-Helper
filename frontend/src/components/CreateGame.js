@@ -9,7 +9,7 @@ import { initRoom } from '../initRoom';
 
 const { Label, Input, Field, Control, Select } = Form;
 
-const MIN_PLAYERS = 7;
+const MIN_PLAYERS = 1;
 
 const CreateGame = (props) => {
     const {client, room, setRoom} = props;
@@ -22,10 +22,9 @@ const CreateGame = (props) => {
 
     const handleSubmit = () => {
         const roleArr = [...roles].map(([a, b]) => ({_id: a._id, qty:b})); // convert map to array
-        client.create("mafia", {code: code.trim(), roles: roleArr, god: true}).then(r => {
-            console.log('scuessful');
-            //initRoom(r);
-            console.log(r);
+        client.create("mafia", {code: code.trim(), roles: roleArr, numPlayers: Number.parseInt(players), 
+            numMafia : Number.parseInt(mafia), god: true})
+        .then(r => {
             setRoom(r);
             history.push('/game');
         })
@@ -35,16 +34,6 @@ const CreateGame = (props) => {
                 setError(err.message);
             }
         });
-        // axios.post('http://localhost:9000/createGame', {code, players, roles: roleArr, numMafia: mafia})
-        //     .then(res => {
-        //         startSession(res.data);
-        //         history.push('/game');
-        //     })
-        //     .catch(err => {
-        //         if (err && err.response) {
-        //             setError(err.response.data);
-        //         }
-        //     });
     };
 
     const roleHandler = {
