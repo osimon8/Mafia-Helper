@@ -26,10 +26,10 @@ class CreateRole extends React.Component {
     }
 
     handleSubmit() {
-        const params = {
-            ...this.state,
-            nightAction: this.state.hasNightAction ? this.state.nightAction : null
-        }
+        // const params = {
+        //     ...this.state,
+        //     nightAction: this.state.hasNightAction ? this.state.nightAction : null
+        // }
         axios.post('http://localhost:9000/createRole', this.state).then((res) => {
             this.props.close();
         })
@@ -84,7 +84,7 @@ class CreateRole extends React.Component {
                     <Field invisible={!this.state.hasNightAction}>
                         <Control>
                             <Label>Use Limit?</Label>
-                            <Checkbox onChange={this.handleNightChange} checked={this.state.nightAction.hasUseLimit || false} name="hasNightAction" name="hasUseLimit"></Checkbox>
+                            <Checkbox onChange={this.handleNightChange} checked={this.state.nightAction.hasUseLimit || false} name="hasNightAction"></Checkbox>
                         </Control>
                     </Field></Container> : null}
                     <Error error={this.state.error}></Error>

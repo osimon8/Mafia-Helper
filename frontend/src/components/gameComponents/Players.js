@@ -1,6 +1,5 @@
-import { Room } from 'colyseus.js';
-import React, { useState } from 'react';
-import { Button, Container, Level, Form, Tile, Box, Columns, Heading } from 'react-bulma-components';
+import React from 'react';
+import { Button, Container, Box, Columns, Heading } from 'react-bulma-components';
 // import { CreateSetup, Error } from '../../components';
 
 const PlayerTile = (props) => {

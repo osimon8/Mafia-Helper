@@ -1,9 +1,7 @@
 import React, {useState} from 'react';
 import './App.css';
 import {Home, Game} from './components'
-import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
-// import history from "./history";
-import Cookies from 'js-cookie';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import * as Colyseus from 'colyseus.js';
 
 const App = () => {

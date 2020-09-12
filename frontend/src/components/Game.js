@@ -2,9 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Container, Heading, Hero, Button, Loader, Section, Columns } from 'react-bulma-components';
 import { Footer, Alignment } from '../components'
 import { useHistory } from 'react-router-dom';
-import { getToken, endSession } from '../session';
-import axios from 'axios';
-import * as Colyseus from 'colyseus.js';
 import { Players, EventLog, Chat } from './gameComponents';
 
 const Game = (props) => {
@@ -61,7 +58,7 @@ const Game = (props) => {
     room.state.onChange = (changes) => {
       // console.log(changes);
       changes.forEach(change => {
-        const { field, value, previousValue } = change;
+        const { field, value } = change;
         switch (field) {
           case "code":
             setCode(value);
@@ -95,6 +92,8 @@ const Game = (props) => {
             if (arr.some(x => x === room.sessionId)) {
               setGod(true);
             }
+            break;
+          default:
             break;
         }
       });
@@ -157,7 +156,7 @@ const Game = (props) => {
         msg = `Ready to start`;
         break;
       default:
-        msg = `${turn % 2 == 0 ? 'Night' : 'Day'} ${Math.floor(turn / 2) + 1}`;
+        msg = `${turn % 2 === 0 ? 'Night' : 'Day'} ${Math.floor(turn / 2) + 1}`;
         break;
     }
 

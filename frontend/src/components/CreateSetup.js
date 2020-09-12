@@ -5,9 +5,9 @@ import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { CreateRole, Alignment } from '../components';
 import axios from 'axios';
 
-const { Label, Input, Field, Control, Checkbox, Select } = Form;
+const { Label, Field, Control, Select } = Form;
 
-const CreateCard = (params) => {
+const CreateCard = () => {
 
     const [show, setShow] = useState(false);
 

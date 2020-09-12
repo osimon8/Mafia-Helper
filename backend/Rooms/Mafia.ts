@@ -95,10 +95,14 @@ class Mafia extends Room<State> {
                 const sender = this.state.players[client.sessionId];
                 if (sender) {
                     this.clients.filter(c => this.isGod(c)).forEach((c: Client) => {
-                        console.log('tset')
                         c.send('message', {sender, text});
                     });
                 }
+            }
+            else {
+                this.clients.filter(c => !this.isGod(c)).forEach((c: Client) => {
+                    c.send('message', {sender: {name: 'God'}, text});
+                });
             }
         });
 

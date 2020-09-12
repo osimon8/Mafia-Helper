@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Container, Form, Level, Button } from 'react-bulma-components';
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import axios from 'axios';
 import {Error} from '../components';
-import {startSession} from '../session';
-import {initRoom} from '../initRoom';
 
 const { Label, Input, Field, Control } = Form;
 

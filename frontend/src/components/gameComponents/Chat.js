@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Heading, Box, Button, Loader, Section, Form } from 'react-bulma-components';
+import React, { useState } from 'react';
+import { Container, Heading, Box, Button, Form } from 'react-bulma-components';
 
 const {Field, Input, Control} = Form;
 
@@ -33,8 +33,14 @@ const Chat = (props) => {
             }
         }
 
+        const enter = (e) => {
+            if (e.key === 'Enter') {
+                send();
+            }
+        }
+
         return <Field className={"has-addons"}>
-            <Input onChange={(e) => setInput(e.target.value)} type="text" value={input} placeholder="Enter a message:"/>
+            <Input onChange={(e) => setInput(e.target.value)} onKeyPress={enter} type="text" value={input} placeholder="Enter a message:"/>
             <Control> <Button color="info" onClick={send}>Send</Button></Control>
             </Field>;
     }

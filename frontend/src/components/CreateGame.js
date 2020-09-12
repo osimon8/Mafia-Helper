@@ -2,17 +2,14 @@ import React, { useState } from 'react';
 import { Button, Container, Level, Form } from 'react-bulma-components';
 // import history from "../history";
 import { CreateSetup, Error } from '../components';
-import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import {startSession} from '../session';
-import { initRoom } from '../initRoom';
 
 const { Label, Input, Field, Control, Select } = Form;
 
 const MIN_PLAYERS = 1;
 
 const CreateGame = (props) => {
-    const {client, room, setRoom} = props;
+    const {client, setRoom} = props;
     const [code, setCode] = useState('');
     const [players, setPlayers] = useState(MIN_PLAYERS);
     const [roles, setRoles] = useState(new Map());
