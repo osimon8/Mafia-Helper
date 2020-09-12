@@ -67,6 +67,9 @@ class State extends Schema {
     @type({map: Player})
     players = new MapSchema<Player>();
 
+    @type({map: Player})
+    deadPlayers = new MapSchema<Player>();
+
     @type('uint8')
     numPlayers: number = 0;
 

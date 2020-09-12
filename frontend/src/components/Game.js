@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Container, Heading, Hero, Button, Loader, Section, Columns } from 'react-bulma-components';
-import { Footer } from '../components'
+import { Footer, Alignment } from '../components'
 import { useHistory } from 'react-router-dom';
 import { getToken, endSession } from '../session';
 import axios from 'axios';
 import * as Colyseus from 'colyseus.js';
-import { Players, EventLog } from './gameComponents';
+import { Players, EventLog, Chat } from './gameComponents';
 
 const Game = (props) => {
 
@@ -21,8 +21,40 @@ const Game = (props) => {
   const [turn, setTurn] = useState(0);
   const [phase, setPhase] = useState("waiting");
   const [events, setEvents] = useState([]);
-  const [god, setGod] = useState(false);
+  const [god, _setGod] = useState(false);
   const [player, setPlayer] = useState(null);
+  const [messages, _setMessages] = useState([]);
+  const messagesRef = useRef(messages);
+  const godRef = useRef(god);
+
+  const parseSchema = (value, keyName = 'key', valueName = 'value') => {
+    const values = Object.values(value.toJSON());
+    const keys = Object.keys(value.toJSON());
+    return values.map((v, i) => {
+      return typeof (v) === 'object' ? { ...v, [keyName]: keys[i] } : { [valueName]: v, [keyName]: keys[i] };
+    })
+  }
+
+  const setMessages = (messages) => {
+    messagesRef.current = messages;
+    _setMessages(messages);
+  }
+
+  const setGod = (god) => {
+    godRef.current = god;
+    _setGod(god);
+  }
+
+  const addMessage = (sender, text) => {
+    const arr = [...messagesRef.current];
+    const msg = {
+      sender,
+      text
+    }
+    arr.push(msg);
+    setMessages(arr);
+  };
+
 
   const initRoom = () => {
 
@@ -35,13 +67,11 @@ const Game = (props) => {
             setCode(value);
             break;
           case "players":
-            setPlayers([...Object.values(value.toJSON())]);
-            console.log([...Object.values(value.toJSON())])
-            console.log(value)
+            setPlayers(parseSchema(value, 'id'));
             break;
           case "playerNames":
-              setPlayerNames([...Object.values(value.toJSON())]);
-              break;
+            setPlayerNames(parseSchema(value, 'id', 'name'));
+            break;
           case "roles":
             setRoles([...Object.values(value.toJSON())]);
             break;
@@ -76,8 +106,20 @@ const Game = (props) => {
     // });
 
     room.onMessage('role', player => {
-        setPlayer(player);
+      setPlayer(player);
     });
+
+    
+    room.onMessage('message', (message) => {
+      if (!godRef) {
+        addMessage('God', message.text);
+      }
+      else {
+        addMessage(message.sender.name, message.text);
+      }
+    });
+
+
 
     const onLeave = () => {
       history.push('/');
@@ -109,7 +151,7 @@ const Game = (props) => {
     let msg;
     switch (phase) {
       case "waiting":
-        msg = `Waiting for players (${playerNames.length}/${numPlayers})`; 
+        msg = `Waiting for players (${playerNames.length}/${numPlayers})`;
         break;
       case "ready":
         msg = `Ready to start`;
@@ -120,29 +162,36 @@ const Game = (props) => {
     }
 
     let el = <Container>
-    <Heading>{msg}</Heading>
-  </Container>;
+      <Heading>{msg}</Heading>
+    </Container>;
 
     if (phase === "ready" && god) {
       el = <Container>
-      <Heading>{msg}</Heading>
-      <Button color='success' onClick={() => room.send("start")}>Start</Button>
-    </Container>;
+        <Heading>{msg}</Heading>
+        <Button color='success' onClick={() => room.send("start")}>Start</Button>
+      </Container>;
     }
 
     return el;
   }
 
+  const isDead = () => {
+    return !god && !playerNames.some(x => x.id === room.sessionId);
+  }
+
   const RoleDisp = () => {
     if (god || !player) {
-      return <span/>;
+      return <span />;
     }
-    const {role, alignment} = player;
+    else if (isDead()) {
+      return <Heading size={3}>You are dead</Heading>;
+    }
+    const { role, alignment } = player;
     const vT = 'You are just a regular member of the town. You have no special actions.'
     const vM = 'You are a regular member of the mafia. Each night, choose someone to kill along with the rest of your mafia team.'
 
     const roleM = `${role ? `Role: ${role.name}` : ''}`;
-    const alignM = <p>Alignment: <span style={{color: alignment === 'Town' ? '#3bde3b' : 'red'}}>{alignment}</span></p>
+    const alignM = <p>Alignment: <Alignment alignment={alignment} /></p>
     const desc = `${role ? role.description : (alignment === 'Town' ? vT : vM)}`;
 
     return <Container>
@@ -161,7 +210,7 @@ const Game = (props) => {
     return phase !== 'waiting' && phase !== 'ready';
   }
 
-  
+
   //TODO: Fix stacking order of columns on mobile, something like this
   /*
     @media(max-width: $tablet) {
@@ -175,22 +224,25 @@ const Game = (props) => {
   const GameContent = () => {
     return (
       <Container fluid={true}>
-        <Container style={{marginBottom: '1rem'}}>
-        <Heading>Code: {code}</Heading>
-            <Heading subtitle renderAs="h2">Roles: {roles.map((x, i) => `${x.name}${x.qty > 1 ? ` (${x.qty})` : ''}${i < roles.length - 1 ? ', ' : ''}`)}</Heading>
-            <Heading subtitle renderAs="h3">Mafia: {numMafia}</Heading>
-            <RoleDisp/>
-            <TurnDisplay />
+        <Container style={{ marginBottom: '1rem' }}>
+          <Heading>Code: {code}</Heading>
+          <Heading subtitle renderAs="h2">Roles: {roles.map((x, i) => `${x.name}${x.qty > 1 ? ` (${x.qty})` : ''}${i < roles.length - 1 ? ', ' : ''}`)}</Heading>
+          <Heading subtitle renderAs="h3">Mafia: {numMafia}</Heading>
+          <RoleDisp />
+          <TurnDisplay />
         </Container>
         <Columns>
-            <Columns.Column size={3}>
-              <EventLog events={events} />
-            </Columns.Column>
-            <Columns.Column>
-              <Container>
-              <Players players={players} playerNames={playerNames} ready={gameStarted()}></Players>
-              </Container>
-            </Columns.Column>
+          <Columns.Column size={3}>
+            <EventLog events={events} />
+          </Columns.Column>
+          <Columns.Column>
+            <Container>
+              <Players players={players} playerNames={playerNames} ready={gameStarted()} room={room}></Players>
+            </Container>
+          </Columns.Column>
+          <Columns.Column size={3}>
+            <Chat room={room} god={god} addMessage={addMessage} messages={messages} />
+          </Columns.Column>
         </Columns>
       </Container>
     );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Heading, Container, Level, Form, Box, Modal, Button, Dropdown } from 'react-bulma-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { CreateRole } from '../components';
+import { CreateRole, Alignment } from '../components';
 import axios from 'axios';
 
 const { Label, Input, Field, Control, Checkbox, Select } = Form;
@@ -90,7 +90,7 @@ const CreateSetup = (props) => {
                         {params.role.name}
                     </Heading>
                     <Heading subtitle size={5}>
-                        Alignment: {params.role.alignment}
+                        Alignment: <Alignment alignment={params.role.alignment}/>
                     </Heading>
                     <Heading subtitle size={6}>
                         {params.role.description}

@@ -54,11 +54,11 @@ class Mafia extends Room<State> {
         this.state.numMafia = numMafia;
         registerGame(code, this.roomId);
 
-        const event = new Event();
+        let event = new Event();
         event.text = `Game created with code "${code}"`;
         this.state.eventLog.push(event);
 
-        this.onMessage("start", (client : Client, message) => {
+        this.onMessage("start", (client : Client) => {
             if (this.state.phase === "ready" && this.isGod(client) && this.gameFull()) {
                 this.assignRoles();
                 this.state.phase = 'night';
@@ -69,6 +69,39 @@ class Mafia extends Room<State> {
             // console.log("ChatRoom received message from", client.sessionId, ":", message);
             // this.broadcast("messages", `(${client.sessionId}) ${message}`);
         });
+
+
+        this.onMessage("kill", (client: Client, target: string) => {
+            if (this.isGod(client)) {
+                const player = this.state.players[target];
+                if (player) {
+                    this.state.deadPlayers[target] = player;
+                    event = new Event();
+                    event.text = `${player.name} was killed! They were aligned with the ${player.alignment}`;
+                    this.state.eventLog.push(event);
+                    --this.state.numPlayers;
+                    if (player.alignment === 'Mafia') {
+                        --this.state.numMafia;
+                    }
+                    delete this.state.players[target];
+                    delete this.state.playerNames[target];
+                }
+            }
+        });
+
+        
+        this.onMessage("message", (client: Client, text: string) => {
+            if (!this.isGod(client)) {
+                const sender = this.state.players[client.sessionId];
+                if (sender) {
+                    this.clients.filter(c => this.isGod(c)).forEach((c: Client) => {
+                        console.log('tset')
+                        c.send('message', {sender, text});
+                    });
+                }
+            }
+        });
+
     }
 
     onJoin(client: Client, options: any) {
